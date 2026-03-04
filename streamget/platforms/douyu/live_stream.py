@@ -110,7 +110,7 @@ class DouyuLiveStream(BaseLiveStream):
 
         params = {
             'rate': rate,
-            'ver': 'Douyu_new',
+            'ver': '219032101',
             'iar': '0',
             'ive': '0',
             'rid': rid,
@@ -125,32 +125,12 @@ class DouyuLiveStream(BaseLiveStream):
         if cdn:
             params['cdn'] = cdn
 
-        json_str_new = await async_req(
-            url=f'https://{self.PLAY_DOMAIN}/lapi/live/getH5Play/{rid}',
-            proxy_addr=self.proxy_addr,
-            headers=self._get_headers(origin=True),
-            params=params
-        )
-        try:
-            flv_data_new = json.loads(json_str_new)
-            if flv_data_new.get('error') == 0 and flv_data_new.get('data'):
-                return flv_data_new
-        except:
-            pass
-
         json_str = await async_req(
             url=f'https://{self.PLAY_DOMAIN}/lapi/live/getH5PlayV1/{rid}',
             proxy_addr=self.proxy_addr,
             headers=self._get_headers(origin=True, content_type=True),
             data=params
         )
-        try:
-            flv_data = json.loads(json_str)
-            if flv_data.get('error') == 0 and flv_data.get('data'):
-                return flv_data
-        except:
-            pass
-
         return json.loads(json_str)
 
     async def fetch_stream_url(
