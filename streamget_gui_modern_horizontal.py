@@ -186,10 +186,10 @@ class ConfigManager:
             'vlc_path': '',
             'potplayer_path': '',
             'mpv_path': '',
-            'default_player': 'vlc'
+            'default_player': 'mpv'
         }
         self.config['FONT'] = {
-            'size': '11'
+            'size': '15'
         }
         self.save_config()
     
