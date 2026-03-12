@@ -59,7 +59,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v_gui.${{ needs.create_release.outputs.version }}
-          name: StreamGet CUI ${{ needs.create_release.outputs.version }}
+          name: StreamGet GUI ${{ needs.create_release.outputs.version }}
           files: dist/StreamGetGUI.exe
           draft: false
           prerelease: false
