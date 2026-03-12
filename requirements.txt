@@ -6,3 +6,4 @@ tqdm>=4.67.1
 httpx[http2]>=0.28.1
 PyExecJS>=1.5.1
 deprecated>=1.2.18
+customtkinter>=5.2.0
