@@ -122,6 +122,7 @@ class StreamGetGUIPackager:
             'argparse',
             'importlib',
             'deprecated',
+            'customtkinter',
             'streamget.DouyinLiveStream',
             'streamget.TikTokLiveStream',
             'streamget.KwaiLiveStream',
@@ -224,3 +225,4 @@ class StreamGetGUIPackager:
 if __name__ == "__main__":
     packager = StreamGetGUIPackager()
     packager.main()
+
