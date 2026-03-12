@@ -6,7 +6,7 @@ permissions:
 on:
   push:
     tags:
-      - v_cli.*
+      - v_Gui.*
   workflow_dispatch:
 
 jobs:
@@ -23,14 +23,14 @@ jobs:
             VERSION=$(date -u +%Y%m%d%H%M%S)
           else
             VERSION=${GITHUB_REF#refs/tags/}
-            VERSION=${VERSION/v_cli./}
+            VERSION=${VERSION/v_gui./}
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
       - name: 为 workflow_dispatch 创建标签
         if: github.event_name == 'workflow_dispatch'
         run: |
-          git tag v_cli.${{ steps.get_version.outputs.version }}
-          git push origin v_cli.${{ steps.get_version.outputs.version }}
+          git tag v_gui.${{ steps.get_version.outputs.version }}
+          git push origin v_gui.${{ steps.get_version.outputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -58,7 +58,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v_cli.${{ needs.create_release.outputs.version }}
+          tag_name: v_gui.${{ needs.create_release.outputs.version }}
           name: StreamGet CUI ${{ needs.create_release.outputs.version }}
           files: dist/StreamGetGUI.exe
           draft: false
