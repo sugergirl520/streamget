@@ -11,25 +11,22 @@ from pathlib import Path
 import subprocess
 import os
 
-# 设置现代化主题
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("dark-blue")
 
-# 自定义颜色方案
 COLORS = {
-    "primary": "#2C3E50",      # 主色调 - 深蓝灰
-    "secondary": "#3498DB",    # 次要色 - 亮蓝
-    "accent": "#E74C3C",       # 强调色 - 红色
-    "success": "#2ECC71",      # 成功色 - 绿色
-    "warning": "#F39C12",      # 警告色 - 橙色
-    "light_bg": "#F8F9FA",     # 浅背景
-    "card_bg": "#FFFFFF",      # 卡片背景
-    "border": "#E9ECEF",       # 边框色
-    "text_primary": "#2C3E50", # 主文字
-    "text_secondary": "#7F8C8D" # 次文字
+    "primary": "#2C3E50",
+    "secondary": "#3498DB",
+    "accent": "#E74C3C",
+    "success": "#2ECC71",
+    "warning": "#F39C12",
+    "light_bg": "#F8F9FA",
+    "card_bg": "#FFFFFF",
+    "border": "#E9ECEF",
+    "text_primary": "#2C3E50",
+    "text_secondary": "#7F8C8D"
 }
 
-# ================ StreamGet核心模块 ================
 class PlatformConfig:
     PLATFORMS = {
         'douyin': {'url': 'https://live.douyin.com/{room_id}', 'module': 'DouyinLiveStream'},
@@ -105,9 +102,7 @@ class PlatformLoader:
             module = __import__('streamget')
             return getattr(module, class_name)
         except (ImportError, AttributeError) as e:
-            raise ImportError(
-                f"Platform module not found: {class_name}"
-            ) from e
+            raise ImportError(f"Platform module not found: {class_name}") from e
 
     @staticmethod
     def create_instance(platform: str, proxy: Optional[str] = None) -> Any:
@@ -169,7 +164,6 @@ class OutputFormatter:
             "urls": urls
         }, indent=2, ensure_ascii=False).encode('utf-8')
 
-# ================ 配置管理器模块 ================
 class ConfigManager:
     def __init__(self):
         self.config_file = Path(__file__).parent / "streamget_config.ini"
@@ -205,7 +199,7 @@ class ConfigManager:
         self.save_config()
     
     def get_default_player(self):
-        return self.config.get('PLAYER', 'default_player', fallback='vlc')
+        return self.config.get('PLAYER', 'default_player', fallback='mpv')
     
     def set_default_player(self, player_name):
         self.config.set('PLAYER', 'default_player', player_name)
@@ -221,7 +215,6 @@ class ConfigManager:
         self.config.set('FONT', 'size', str(size))
         self.save_config()
 
-# ================ 播放器控制器模块 ================
 class PlayerController:
     def __init__(self, config_manager):
         self.config = config_manager
@@ -236,14 +229,7 @@ class PlayerController:
                     return False
                 return False
             
-            if default_player == "vlc":
-                cmd = f'"{player_path}" "{url}"'
-            elif default_player == "potplayer":
-                cmd = f'"{player_path}" "{url}"'
-            elif default_player == "mpv":
-                cmd = f'"{player_path}" "{url}"'
-            else:
-                cmd = f'"{player_path}" "{url}"'
+            cmd = f'"{player_path}" "{url}"'
             
             def run_play():
                 try:
@@ -259,7 +245,6 @@ class PlayerController:
             messagebox.showerror("错误", f"播放失败: {str(e)}")
             return False
 
-# ================ StreamGet执行器模块 ================
 class StreamGetExecutor:
     def __init__(self):
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -283,7 +268,6 @@ class StreamGetExecutor:
             finally:
                 loop.close()
 
-# ================ 现代化的设置对话框 ================
 class SettingsDialog:
     def __init__(self, parent, config_manager, update_callback=None):
         self.parent = parent
@@ -293,7 +277,7 @@ class SettingsDialog:
         
         self.window = ctk.CTkToplevel(parent)
         self.window.title("设置")
-        self.window.geometry("750x550")
+        self.window.geometry("750x650")
         self.window.configure(fg_color=COLORS["light_bg"])
         self.center_window()
         self.window.grab_set()
@@ -306,40 +290,16 @@ class SettingsDialog:
         parent_height = self.parent.winfo_height()
         
         x = parent_x + (parent_width - 750) // 2
-        y = parent_y + (parent_height - 550) // 2
+        y = parent_y + (parent_height - 650) // 2
         
-        self.window.geometry(f"750x550+{x}+{y}")
+        self.window.geometry(f"750x650+{x}+{y}")
     
     def setup_ui(self):
-        main_container = ctk.CTkFrame(
-            self.window, 
-            fg_color=COLORS["light_bg"],
-            corner_radius=0
-        )
+        main_container = ctk.CTkFrame(self.window, fg_color=COLORS["light_bg"], corner_radius=0)
         main_container.pack(fill="both", expand=True, padx=0, pady=0)
         
-        header_frame = ctk.CTkFrame(
-            main_container,
-            fg_color=COLORS["primary"],
-            height=60,
-            corner_radius=0
-        )
-        header_frame.pack(fill="x", padx=0, pady=(0, 20))
-        header_frame.pack_propagate(False)
-        
-        title_label = ctk.CTkLabel(
-            header_frame,
-            text="⚙ 设置",
-            font=ctk.CTkFont(family="Segoe UI", size=20, weight="bold"),
-            text_color="white"
-        )
-        title_label.pack(side="left", padx=25, pady=0)
-        
-        content_frame = ctk.CTkFrame(
-            main_container,
-            fg_color="transparent"
-        )
-        content_frame.pack(fill="both", expand=True, padx=20, pady=(0, 20))
+        content_frame = ctk.CTkFrame(main_container, fg_color="transparent")
+        content_frame.pack(fill="both", expand=True, padx=20, pady=20)
         
         tabs = ctk.CTkTabview(
             content_frame,
@@ -360,10 +320,7 @@ class SettingsDialog:
         self.setup_player_tab(player_tab)
         self.setup_font_tab(font_tab)
         
-        button_frame = ctk.CTkFrame(
-            main_container,
-            fg_color="transparent"
-        )
+        button_frame = ctk.CTkFrame(main_container, fg_color="transparent")
         button_frame.pack(fill="x", padx=20, pady=(0, 20))
         
         button_container = ctk.CTkFrame(button_frame, fg_color="transparent")
@@ -401,21 +358,16 @@ class SettingsDialog:
         tab.configure(fg_color=COLORS["card_bg"])
         
         default_player_frame = ctk.CTkFrame(
-            tab,
-            fg_color=COLORS["card_bg"],
-            corner_radius=8,
-            border_width=1,
-            border_color=COLORS["border"]
+            tab, fg_color=COLORS["card_bg"], corner_radius=8, border_width=1, border_color=COLORS["border"]
         )
         default_player_frame.pack(fill="x", padx=20, pady=(20, 15))
         
-        section_title = ctk.CTkLabel(
+        ctk.CTkLabel(
             default_player_frame,
             text="🎯 选择默认播放器",
             font=ctk.CTkFont(family="Segoe UI", size=14, weight="bold"),
             text_color=COLORS["primary"]
-        )
-        section_title.pack(anchor="w", padx=20, pady=(15, 10))
+        ).pack(anchor="w", padx=20, pady=(15, 10))
         
         self.player_var = ctk.StringVar(value=self.config.get_default_player())
         players = [("vlc", "🎬 VLC"), ("potplayer", "▶ PotPlayer"), ("mpv", "🎵 MPV")]
@@ -423,15 +375,12 @@ class SettingsDialog:
         radio_container = ctk.CTkFrame(default_player_frame, fg_color="transparent")
         radio_container.pack(fill="x", padx=20, pady=(0, 15))
         
-        for i, (player_id, player_name) in enumerate(players):
-            radio_frame = ctk.CTkFrame(radio_container, fg_color="transparent")
-            radio_frame.pack(side="left", padx=(0, 20))
-            
-            radio = ctk.CTkRadioButton(
-                radio_frame,
-                text=player_name,
+        for pid, pname in players:
+            ctk.CTkRadioButton(
+                radio_container,
+                text=pname,
                 variable=self.player_var,
-                value=player_id,
+                value=pid,
                 font=ctk.CTkFont(size=max(self.font_size-1, 10)),
                 radiobutton_width=16,
                 radiobutton_height=16,
@@ -439,49 +388,42 @@ class SettingsDialog:
                 hover_color=COLORS["secondary"],
                 border_color=COLORS["text_secondary"],
                 text_color=COLORS["text_primary"]
-            )
-            radio.pack(side="left", padx=(0, 5))
+            ).pack(side="left", padx=20)
         
         path_frame = ctk.CTkFrame(
-            tab,
-            fg_color=COLORS["card_bg"],
-            corner_radius=8,
-            border_width=1,
-            border_color=COLORS["border"]
+            tab, fg_color=COLORS["card_bg"], corner_radius=8, border_width=1, border_color=COLORS["border"]
         )
         path_frame.pack(fill="x", padx=20, pady=(0, 20))
         
-        section_title = ctk.CTkLabel(
+        ctk.CTkLabel(
             path_frame,
             text="📁 播放器路径设置",
             font=ctk.CTkFont(family="Segoe UI", size=14, weight="bold"),
             text_color=COLORS["primary"]
-        )
-        section_title.pack(anchor="w", padx=20, pady=(15, 10))
+        ).pack(anchor="w", padx=20, pady=(15, 10))
         
         self.path_entries = {}
         
         for player_id, player_name in players:
-            player_row = ctk.CTkFrame(path_frame, fg_color="transparent")
-            player_row.pack(fill="x", padx=20, pady=(0, 10))
+            row = ctk.CTkFrame(path_frame, fg_color="transparent")
+            row.pack(fill="x", padx=20, pady=8)
             
-            label_container = ctk.CTkFrame(player_row, fg_color="transparent", width=120)
-            label_container.pack(side="left")
-            label_container.pack_propagate(False)
-            
-            ctk.CTkLabel(
-                label_container,
-                text=f"{player_name.split(' ')[-1]}:",
+            lbl = ctk.CTkLabel(
+                row,
+                text=f"{player_name.split()[-1]}:",
                 font=ctk.CTkFont(size=max(self.font_size-1, 10)),
-                text_color=COLORS["text_primary"]
-            ).pack(anchor="w")
+                text_color=COLORS["text_primary"],
+                width=100,
+                anchor="w"
+            )
+            lbl.pack(side="left", padx=(0, 10))
             
-            input_container = ctk.CTkFrame(player_row, fg_color="transparent")
-            input_container.pack(side="left", fill="x", expand=True, padx=(10, 0))
+            entry_frame = ctk.CTkFrame(row, fg_color="transparent")
+            entry_frame.pack(side="left", fill="x", expand=True)
             
             path_var = ctk.StringVar(value=self.config.get_player_path(player_id))
             entry = ctk.CTkEntry(
-                input_container,
+                entry_frame,
                 textvariable=path_var,
                 placeholder_text="点击浏览选择播放器路径...",
                 height=36,
@@ -491,10 +433,10 @@ class SettingsDialog:
                 border_width=1,
                 corner_radius=4
             )
-            entry.pack(side="left", fill="x", expand=True, padx=(0, 10))
+            entry.pack(side="left", fill="x", expand=True, padx=(0, 8))
             
-            browse_btn = ctk.CTkButton(
-                input_container,
+            btn = ctk.CTkButton(
+                entry_frame,
                 text="浏览",
                 width=80,
                 height=36,
@@ -503,95 +445,43 @@ class SettingsDialog:
                 hover_color="#2980B9",
                 command=lambda e=entry: self.browse_player_path(e)
             )
-            browse_btn.pack(side="right")
+            btn.pack(side="right")
             
             self.path_entries[player_id] = (entry, path_var)
     
     def setup_font_tab(self, tab):
         tab.configure(fg_color=COLORS["card_bg"])
         
-        font_frame = ctk.CTkFrame(
-            tab,
-            fg_color=COLORS["card_bg"],
-            corner_radius=8,
-            border_width=1,
-            border_color=COLORS["border"]
-        )
+        font_frame = ctk.CTkFrame(tab, fg_color=COLORS["card_bg"], corner_radius=8, border_width=1, border_color=COLORS["border"])
         font_frame.pack(fill="both", expand=True, padx=20, pady=20)
         
-        section_title = ctk.CTkLabel(
-            font_frame,
-            text="🔤 字体大小设置",
-            font=ctk.CTkFont(family="Segoe UI", size=14, weight="bold"),
-            text_color=COLORS["primary"]
-        )
-        section_title.pack(anchor="w", padx=20, pady=(20, 20))
+        ctk.CTkLabel(font_frame, text="🔤 字体大小设置", font=ctk.CTkFont(family="Segoe UI", size=14, weight="bold"), text_color=COLORS["primary"]).pack(anchor="w", padx=20, pady=(20, 20))
         
         input_frame = ctk.CTkFrame(font_frame, fg_color="transparent")
         input_frame.pack(fill="x", padx=20, pady=(0, 20))
         
-        ctk.CTkLabel(
-            input_frame,
-            text="字体大小:",
-            font=ctk.CTkFont(size=max(self.font_size, 11), weight="bold"),
-            text_color=COLORS["text_primary"],
-            width=80
-        ).pack(side="left", padx=(0, 10))
+        ctk.CTkLabel(input_frame, text="字体大小:", font=ctk.CTkFont(size=max(self.font_size, 11), weight="bold"), text_color=COLORS["text_primary"], width=80).pack(side="left", padx=(0, 10))
         
         current_size = self.config.get_font_size()
         self.font_size_var = ctk.StringVar(value=str(current_size))
         
-        self.font_entry = ctk.CTkEntry(
-            input_frame,
-            textvariable=self.font_size_var,
-            width=80,
-            height=36,
-            font=ctk.CTkFont(size=max(self.font_size, 11)),
-            fg_color="white",
-            border_color=COLORS["border"],
-            border_width=1,
-            corner_radius=4,
-            justify="center"
-        )
+        self.font_entry = ctk.CTkEntry(input_frame, textvariable=self.font_size_var, width=80, height=36, font=ctk.CTkFont(size=max(self.font_size, 11)), fg_color="white", border_color=COLORS["border"], border_width=1, corner_radius=4, justify="center")
         self.font_entry.pack(side="left", padx=(0, 10))
         
-        ctk.CTkLabel(
-            input_frame,
-            text="(建议范围: 8-16)",
-            font=ctk.CTkFont(size=max(self.font_size-1, 10)),
-            text_color=COLORS["text_secondary"]
-        ).pack(side="left")
+        ctk.CTkLabel(input_frame, text="(建议范围: 8-16)", font=ctk.CTkFont(size=max(self.font_size-1, 10)), text_color=COLORS["text_secondary"]).pack(side="left")
         
         preview_container = ctk.CTkFrame(font_frame, fg_color="transparent")
         preview_container.pack(fill="x", padx=20, pady=(0, 20))
         
-        preview_label = ctk.CTkLabel(
-            preview_container,
-            text="字体预览:",
-            font=ctk.CTkFont(size=max(self.font_size, 11), weight="bold"),
-            text_color=COLORS["text_primary"]
-        )
+        preview_label = ctk.CTkLabel(preview_container, text="字体预览:", font=ctk.CTkFont(size=max(self.font_size, 11), weight="bold"), text_color=COLORS["text_primary"])
         preview_label.pack(anchor="w", pady=(0, 10))
         
-        preview_frame = ctk.CTkFrame(
-            preview_container,
-            fg_color="#F8F9FA",
-            corner_radius=6,
-            border_width=1,
-            border_color=COLORS["border"],
-            height=100
-        )
+        preview_frame = ctk.CTkFrame(preview_container, fg_color="#F8F9FA", corner_radius=6, border_width=1, border_color=COLORS["border"], height=100)
         preview_frame.pack(fill="x")
         preview_frame.pack_propagate(False)
         
-        preview_text = "🎯 StreamGet 直播获取工具 - 这是字体大小的预览文本"
-        self.preview_label = ctk.CTkLabel(
-            preview_frame,
-            text=preview_text,
-            font=ctk.CTkFont(family="Segoe UI", size=current_size),
-            text_color=COLORS["text_primary"],
-            wraplength=600
-        )
+        preview_text = "🎯直播获取工具 - 这是字体大小的预览文本"
+        self.preview_label = ctk.CTkLabel(preview_frame, text=preview_text, font=ctk.CTkFont(family="Segoe UI", size=current_size), text_color=COLORS["text_primary"], wraplength=600)
         self.preview_label.pack(expand=True, padx=20, pady=20)
         
         self.font_entry.bind("<KeyRelease>", self.update_font_preview)
@@ -606,12 +496,7 @@ class SettingsDialog:
     
     def browse_player_path(self, entry):
         file_types = [("可执行文件", "*.exe"), ("所有文件", "*.*")]
-        
-        file_path = filedialog.askopenfilename(
-            title="选择播放器路径",
-            filetypes=file_types
-        )
-        
+        file_path = filedialog.askopenfilename(title="选择播放器路径", filetypes=file_types)
         if file_path:
             entry.delete(0, "end")
             entry.insert(0, file_path)
@@ -644,7 +529,6 @@ class SettingsDialog:
         except Exception as e:
             messagebox.showerror("错误", f"保存设置时出错: {str(e)}")
 
-# ================ 现代化的流地址对话框 ================
 class StreamUrlDialog:
     def __init__(self, parent, url_data, room_info, config_manager):
         self.parent = parent
@@ -663,7 +547,6 @@ class StreamUrlDialog:
         self.window.title(self.get_window_title())
         self.window.geometry(f"900x{height}")
         self.window.configure(fg_color=COLORS["light_bg"])
-        
         self.center_window()
         self.window.grab_set()
         self.setup_ui()
@@ -673,25 +556,21 @@ class StreamUrlDialog:
         rid = self.room_info.get('rid', '')
         title = self.room_info.get('title', '')
         
-        title_parts = []
-        
+        parts = []
         if anchor and rid:
-            title_parts.append(f"主播：{anchor}－房间号：{rid}")
+            parts.append(f"主播：{anchor}－房间号：{rid}")
         elif anchor:
-            title_parts.append(f"主播：{anchor}")
+            parts.append(f"主播：{anchor}")
         elif rid:
-            title_parts.append(f"房间号：{rid}")
+            parts.append(f"房间号：{rid}")
         
         if title:
-            if title_parts:
-                title_parts.append(f"      {title}")
+            if parts:
+                parts.append(f"      {title}")
             else:
-                title_parts.append(title)
+                parts.append(title)
         
-        if not title_parts:
-            return "🎯 流地址"
-        else:
-            return "🎯 " + "".join(title_parts)
+        return "🎯 " + "".join(parts) if parts else "🎯 流地址"
     
     def center_window(self):
         parent_x = self.parent.winfo_x()
@@ -710,70 +589,17 @@ class StreamUrlDialog:
         self.window.geometry(f"{width}x{height}+{x}+{y}")
     
     def setup_ui(self):
-        main_frame = ctk.CTkFrame(
-            self.window,
-            fg_color=COLORS["light_bg"]
-        )
+        main_frame = ctk.CTkFrame(self.window, fg_color=COLORS["light_bg"])
         main_frame.pack(fill="both", expand=True, padx=0, pady=0)
         
-        header_frame = ctk.CTkFrame(
-            main_frame,
-            fg_color=COLORS["primary"],
-            height=80,
-            corner_radius=0
-        )
-        header_frame.pack(fill="x", padx=0, pady=(0, 20))
-        header_frame.pack_propagate(False)
-        
-        header_content = ctk.CTkFrame(header_frame, fg_color="transparent")
-        header_content.pack(fill="both", expand=True, padx=25, pady=15)
-        
-        anchor = self.room_info.get('anchor', '')
-        rid = self.room_info.get('rid', '')
-        
-        if anchor or rid:
-            info_parts = []
-            if anchor:
-                info_parts.append(f"👤 {anchor}")
-            if rid:
-                info_parts.append(f"# {rid}")
-            
-            info_text = " | ".join(info_parts)
-            ctk.CTkLabel(
-                header_content,
-                text=info_text,
-                font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"),
-                text_color="white"
-            ).pack(anchor="w")
-        
-        title = self.room_info.get('title', '')
-        if title:
-            if len(title) > 50:
-                title = title[:47] + "..."
-            ctk.CTkLabel(
-                header_content,
-                text=title,
-                font=ctk.CTkFont(family="Segoe UI", size=13),
-                text_color="#E0E0E0",
-                wraplength=700
-            ).pack(anchor="w", pady=(5, 0))
-        
-        content_frame = ctk.CTkFrame(
-            main_frame,
-            fg_color="transparent"
-        )
-        content_frame.pack(fill="both", expand=True, padx=20, pady=(0, 20))
+        content_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
+        content_frame.pack(fill="both", expand=True, padx=20, pady=20)
         
         title_frame = ctk.CTkFrame(content_frame, fg_color="transparent")
         title_frame.pack(fill="x", pady=(0, 15))
         
         url_count = len(self.url_data.get("urls", []))
-        ctk.CTkLabel(
-            title_frame,
-            text=f"📡 可用流地址 ({url_count}个)",
-            font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"),
-            text_color=COLORS["primary"]
-        ).pack(side="left")
+        ctk.CTkLabel(title_frame, text=f"📡 可用流地址 ({url_count}个)", font=ctk.CTkFont(family="Segoe UI", size=16, weight="bold"), text_color=COLORS["primary"]).pack(side="left")
         
         scroll_container = ctk.CTkFrame(content_frame, fg_color=COLORS["card_bg"], corner_radius=8)
         scroll_container.pack(fill="both", expand=True)
@@ -784,28 +610,12 @@ class StreamUrlDialog:
         self.display_urls(scroll_frame)
         
         if not self.url_data.get("urls", []):
-            ctk.CTkLabel(
-                scroll_frame,
-                text="📭 无可用流地址",
-                font=ctk.CTkFont(family="Segoe UI", size=14),
-                text_color=COLORS["text_secondary"]
-            ).pack(expand=True, pady=50)
+            ctk.CTkLabel(scroll_frame, text="📭 无可用流地址", font=ctk.CTkFont(family="Segoe UI", size=14), text_color=COLORS["text_secondary"]).pack(expand=True, pady=50)
         
         button_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
         button_frame.pack(fill="x", padx=20, pady=(0, 20))
         
-        close_btn = ctk.CTkButton(
-            button_frame,
-            text="关闭",
-            command=self.window.destroy,
-            width=120,
-            height=40,
-            font=ctk.CTkFont(size=max(self.font_size, 11)),
-            fg_color=COLORS["border"],
-            hover_color="#D6D8DB",
-            text_color=COLORS["text_primary"],
-            corner_radius=6
-        )
+        close_btn = ctk.CTkButton(button_frame, text="关闭", command=self.window.destroy, width=120, height=40, font=ctk.CTkFont(size=max(self.font_size, 11)), fg_color=COLORS["border"], hover_color="#D6D8DB", text_color=COLORS["text_primary"], corner_radius=6)
         close_btn.pack(side="right")
     
     def display_urls(self, scroll_frame):
@@ -816,102 +626,48 @@ class StreamUrlDialog:
             self.create_url_row(scroll_frame, i, url, url_item)
     
     def create_url_row(self, parent, index, url, url_item):
-        row_frame = ctk.CTkFrame(
-            parent,
-            fg_color=COLORS["card_bg"],
-            corner_radius=6,
-            border_width=1,
-            border_color=COLORS["border"]
-        )
+        row_frame = ctk.CTkFrame(parent, fg_color=COLORS["card_bg"], corner_radius=6, border_width=1, border_color=COLORS["border"])
         row_frame.pack(fill="x", pady=(0, 10), padx=5)
         
         main_container = ctk.CTkFrame(row_frame, fg_color="transparent")
         main_container.pack(fill="both", expand=True, padx=15, pady=12)
         
-        # 横向布局：标签 + URL + 按钮
         left_section = ctk.CTkFrame(main_container, fg_color="transparent")
         left_section.pack(side="left", fill="y", padx=(0, 15))
         
-        # 流标签
-        quality = url_item.get("quality", f"流{index+1}")
         label_frame = ctk.CTkFrame(left_section, fg_color="transparent")
         label_frame.pack(side="left", padx=(0, 15))
         
-        quality_badge = ctk.CTkFrame(
-            label_frame,
-            fg_color=COLORS["secondary"],
-            corner_radius=4,
-            width=60,
-            height=36
-        )
+        quality_badge = ctk.CTkFrame(label_frame, fg_color=COLORS["secondary"], corner_radius=4, width=60, height=36)
         quality_badge.pack()
         quality_badge.pack_propagate(False)
         
-        ctk.CTkLabel(
-            quality_badge,
-            text=f" {quality} ",
-            font=ctk.CTkFont(size=max(self.font_size-1, 10), weight="bold"),
-            text_color="white"
-        ).pack(expand=True)
+        quality = url_item.get("quality", f"流{index+1}")
+        ctk.CTkLabel(quality_badge, text=f" {quality} ", font=ctk.CTkFont(size=max(self.font_size-1, 10), weight="bold"), text_color="white").pack(expand=True)
         
-        # URL显示区域
         url_container = ctk.CTkFrame(main_container, fg_color="transparent")
         url_container.pack(side="left", fill="both", expand=True, padx=(0, 15))
         
-        url_display_frame = ctk.CTkFrame(
-            url_container,
-            fg_color="#F8F9FA",
-            corner_radius=4,
-            border_width=1,
-            border_color=COLORS["border"],
-            height=36
-        )
+        url_display_frame = ctk.CTkFrame(url_container, fg_color="#F8F9FA", corner_radius=4, border_width=1, border_color=COLORS["border"], height=36)
         url_display_frame.pack(fill="both", expand=True)
         
-        url_text = ctk.CTkTextbox(
-            url_display_frame,
-            height=36,
-            font=ctk.CTkFont(family="Consolas", size=max(self.font_size-1, 9)),
-            wrap="none",
-            fg_color="transparent",
-            border_width=0
-        )
+        url_text = ctk.CTkTextbox(url_display_frame, height=36, font=ctk.CTkFont(family="Consolas", size=max(self.font_size-1, 9)), wrap="none", fg_color="transparent", border_width=0)
         url_text.pack(fill="both", expand=True, padx=8, pady=6)
         
         display_url = url[:150] + "..." if len(url) > 150 else url
         url_text.insert("1.0", display_url)
         url_text.configure(state="disabled")
         
-        # 按钮区域
         button_container = ctk.CTkFrame(main_container, fg_color="transparent")
         button_container.pack(side="right")
         
-        # 按钮行
         btn_row = ctk.CTkFrame(button_container, fg_color="transparent")
         btn_row.pack()
         
-        copy_btn = ctk.CTkButton(
-            btn_row,
-            text="📋 复制",
-            width=90,
-            height=36,
-            font=ctk.CTkFont(size=max(self.font_size-1, 10)),
-            fg_color=COLORS["secondary"],
-            hover_color="#2980B9",
-            command=lambda u=url: self.copy_url(u)
-        )
+        copy_btn = ctk.CTkButton(btn_row, text="📋 复制", width=90, height=36, font=ctk.CTkFont(size=max(self.font_size-1, 10)), fg_color=COLORS["secondary"], hover_color="#2980B9", command=lambda u=url: self.copy_url(u))
         copy_btn.pack(side="left", padx=(0, 8))
         
-        play_btn = ctk.CTkButton(
-            btn_row,
-            text="▶ 播放",
-            width=90,
-            height=36,
-            font=ctk.CTkFont(size=max(self.font_size-1, 10)),
-            fg_color=COLORS["success"],
-            hover_color="#27AE60",
-            command=lambda u=url: self.play_url(u)
-        )
+        play_btn = ctk.CTkButton(btn_row, text="▶ 播放", width=90, height=36, font=ctk.CTkFont(size=max(self.font_size-1, 10)), fg_color=COLORS["success"], hover_color="#27AE60", command=lambda u=url: self.play_url(u))
         play_btn.pack(side="left")
     
     def copy_url(self, url):
@@ -929,7 +685,6 @@ class StreamUrlDialog:
         self.parent.wait_window(settings_window.window)
         self.window.deiconify()
 
-# ================ 现代化的主应用程序 ================
 class MainApplication:
     def __init__(self):
         self.config_manager = ConfigManager()
@@ -937,7 +692,7 @@ class MainApplication:
         self.player_controller = PlayerController(self.config_manager)
         
         self.window = ctk.CTk()
-        self.window.title("🎯 StreamGet 直播获取工具")
+        self.window.title("🎯直播获取工具")
         self.window.geometry("800x450")
         self.window.configure(fg_color=COLORS["light_bg"])
         
@@ -957,18 +712,10 @@ class MainApplication:
     def setup_ui(self):
         self.font_size = self.config_manager.get_font_size()
         
-        main_container = ctk.CTkFrame(
-            self.window,
-            fg_color=COLORS["light_bg"]
-        )
+        main_container = ctk.CTkFrame(self.window, fg_color=COLORS["light_bg"])
         main_container.pack(fill="both", expand=True, padx=0, pady=0)
         
-        header_frame = ctk.CTkFrame(
-            main_container,
-            fg_color=COLORS["primary"],
-            height=60,
-            corner_radius=0
-        )
+        header_frame = ctk.CTkFrame(main_container, fg_color=COLORS["primary"], height=60, corner_radius=0)
         header_frame.pack(fill="x", padx=0, pady=0)
         header_frame.pack_propagate(False)
         
@@ -978,47 +725,19 @@ class MainApplication:
         title_container = ctk.CTkFrame(header_content, fg_color="transparent")
         title_container.pack(side="left", fill="y", expand=True)
         
-        title_label = ctk.CTkLabel(
-            title_container,
-            text="🎯 StreamGet 直播获取工具",
-            font=ctk.CTkFont(family="Segoe UI", size=20, weight="bold"),
-            text_color="white"
-        )
+        title_label = ctk.CTkLabel(title_container, text="🎯直播获取工具", font=ctk.CTkFont(family="Segoe UI", size=20, weight="bold"), text_color="white")
         title_label.pack(side="left")
         
-        version_label = ctk.CTkLabel(
-            title_container,
-            text="v1.0",
-            font=ctk.CTkFont(family="Segoe UI", size=11),
-            text_color="#B0BEC5"
-        )
+        version_label = ctk.CTkLabel(title_container, text="v1.0", font=ctk.CTkFont(family="Segoe UI", size=11), text_color="#B0BEC5")
         version_label.pack(side="left", padx=(8, 0), pady=(2, 0))
         
-        settings_btn = ctk.CTkButton(
-            header_content,
-            text="⚙ 设置",
-            width=80,
-            height=34,
-            font=ctk.CTkFont(family="Segoe UI", size=12),
-            fg_color=COLORS["secondary"],
-            hover_color="#2980B9",
-            command=self.open_settings
-        )
+        settings_btn = ctk.CTkButton(header_content, text="⚙ 设置", width=80, height=34, font=ctk.CTkFont(family="Segoe UI", size=12), fg_color=COLORS["secondary"], hover_color="#2980B9", command=self.open_settings)
         settings_btn.pack(side="right")
         
-        content_container = ctk.CTkFrame(
-            main_container,
-            fg_color="transparent"
-        )
+        content_container = ctk.CTkFrame(main_container, fg_color="transparent")
         content_container.pack(fill="both", expand=True, padx=40, pady=30)
         
-        card_frame = ctk.CTkFrame(
-            content_container,
-            fg_color=COLORS["card_bg"],
-            corner_radius=12,
-            border_width=1,
-            border_color=COLORS["border"]
-        )
+        card_frame = ctk.CTkFrame(content_container, fg_color=COLORS["card_bg"], corner_radius=12, border_width=1, border_color=COLORS["border"])
         card_frame.pack(expand=True, fill="both")
         
         card_content = ctk.CTkFrame(card_frame, fg_color="transparent")
@@ -1027,44 +746,18 @@ class MainApplication:
         platform_section = ctk.CTkFrame(card_content, fg_color="transparent")
         platform_section.pack(fill="x", pady=(0, 25))
         
-        platform_label = ctk.CTkLabel(
-            platform_section,
-            text="📺 选择直播平台",
-            font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
-            text_color=COLORS["primary"]
-        )
-        platform_label.pack(anchor="w", pady=(0, 12))
+        ctk.CTkLabel(platform_section, text="📺 选择直播平台", font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"), text_color=COLORS["primary"]).pack(anchor="w", pady=(0, 12))
         
         platform_row = ctk.CTkFrame(platform_section, fg_color="transparent")
         platform_row.pack()
         
         for i, (platform_key, platform_name) in enumerate(self.platforms.items()):
-            radio = ctk.CTkRadioButton(
-                platform_row,
-                text=platform_name,
-                variable=self.selected_platform,
-                value=platform_key,
-                font=ctk.CTkFont(family="Segoe UI", size=13),
-                radiobutton_width=16,
-                radiobutton_height=16,
-                fg_color=COLORS["secondary"],
-                hover_color=COLORS["secondary"],
-                border_color=COLORS["text_secondary"],
-                text_color=COLORS["text_primary"],
-                width=100
-            )
-            radio.pack(side="left", padx=(0, 15) if i < len(self.platforms)-1 else 0)
+            ctk.CTkRadioButton(platform_row, text=platform_name, variable=self.selected_platform, value=platform_key, font=ctk.CTkFont(family="Segoe UI", size=13), radiobutton_width=16, radiobutton_height=16, fg_color=COLORS["secondary"], hover_color=COLORS["secondary"], border_color=COLORS["text_secondary"], text_color=COLORS["text_primary"], width=100).pack(side="left", padx=(0, 15) if i < len(self.platforms)-1 else 0)
         
         input_section = ctk.CTkFrame(card_content, fg_color="transparent")
         input_section.pack(fill="x", pady=(0, 25))
         
-        input_label = ctk.CTkLabel(
-            input_section,
-            text="🔢 输入房间号",
-            font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"),
-            text_color=COLORS["primary"]
-        )
-        input_label.pack(anchor="w", pady=(0, 12))
+        ctk.CTkLabel(input_section, text="🔢 输入房间号", font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold"), text_color=COLORS["primary"]).pack(anchor="w", pady=(0, 12))
         
         input_container = ctk.CTkFrame(input_section, fg_color="transparent")
         input_container.pack(fill="x")
@@ -1072,43 +765,17 @@ class MainApplication:
         entry_frame = ctk.CTkFrame(input_container, fg_color="transparent")
         entry_frame.pack(side="left", fill="x", expand=True, padx=(0, 20))
         
-        self.room_entry = ctk.CTkEntry(
-            entry_frame,
-            textvariable=self.room_id,
-            placeholder_text="请输入房间号，按 Enter 快速获取...",
-            height=40,
-            font=ctk.CTkFont(family="Segoe UI", size=13),
-            fg_color="white",
-            border_color=COLORS["border"],
-            border_width=1,
-            corner_radius=6
-        )
+        self.room_entry = ctk.CTkEntry(entry_frame, textvariable=self.room_id, placeholder_text="请输入房间号，按 Enter 快速获取...", height=40, font=ctk.CTkFont(family="Segoe UI", size=13), fg_color="white", border_color=COLORS["border"], border_width=1, corner_radius=6)
         self.room_entry.pack(fill="x")
         self.room_entry.bind("<Return>", lambda event: self.get_stream_info())
         
-        get_button = ctk.CTkButton(
-            input_container,
-            text="🚀 获取直播信息",
-            command=self.get_stream_info,
-            height=40,
-            width=180,
-            font=ctk.CTkFont(family="Segoe UI", size=13, weight="bold"),
-            fg_color=COLORS["success"],
-            hover_color="#27AE60",
-            text_color="white",
-            corner_radius=6
-        )
+        get_button = ctk.CTkButton(input_container, text="🚀 获取直播信息", command=self.get_stream_info, height=40, width=180, font=ctk.CTkFont(family="Segoe UI", size=13, weight="bold"), fg_color=COLORS["success"], hover_color="#27AE60", text_color="white", corner_radius=6)
         get_button.pack(side="right")
         
         status_section = ctk.CTkFrame(card_content, fg_color="transparent")
         status_section.pack(fill="x", pady=(10, 0))
         
-        self.status_label = ctk.CTkLabel(
-            status_section,
-            text="✨ 准备就绪，请输入房间号开始获取",
-            font=ctk.CTkFont(family="Segoe UI", size=12),
-            text_color=COLORS["text_secondary"]
-        )
+        self.status_label = ctk.CTkLabel(status_section, text="✨ 准备就绪，请输入房间号开始获取", font=ctk.CTkFont(family="Segoe UI", size=12), text_color=COLORS["text_secondary"])
         self.status_label.pack(expand=True)
     
     def open_settings(self):
@@ -1144,10 +811,7 @@ class MainApplication:
         
         self.update_status("⏳ 正在获取直播信息...", "blue")
         
-        thread = threading.Thread(
-            target=self.execute_streamget,
-            args=(platform, room_id)
-        )
+        thread = threading.Thread(target=self.execute_streamget, args=(platform, room_id))
         thread.daemon = True
         thread.start()
     
@@ -1161,11 +825,7 @@ class MainApplication:
         anchor = json_data.get("anchor", "")
         urls = json_data.get("urls", [])
         
-        valid_urls = []
-        for url_item in urls:
-            url = url_item.get("url", "")
-            if url and isinstance(url, str) and url.strip():
-                valid_urls.append(url_item)
+        valid_urls = [url_item for url_item in urls if (url := url_item.get("url", "")) and isinstance(url, str) and url.strip()]
         
         if valid_urls:
             if anchor:
@@ -1187,7 +847,6 @@ class MainApplication:
                 self.window.after(0, lambda: self.update_status(f"⚠️ 获取成功！{anchor} 当前未直播", "orange"))
             else:
                 self.window.after(0, lambda: self.update_status("⚠️ 获取成功！当前未直播", "orange"))
-            return
     
     def show_url_dialog(self, data, room_info):
         StreamUrlDialog(self.window, data, room_info, self.config_manager)
@@ -1195,7 +854,6 @@ class MainApplication:
     def run(self):
         self.window.mainloop()
 
-# ================ 主程序入口 ================
 if __name__ == "__main__":
     app = MainApplication()
     app.run()
