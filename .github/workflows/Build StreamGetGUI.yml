@@ -6,7 +6,7 @@ permissions:
 on:
   push:
     tags:
-      - v_gui.*
+      - v_GUI.*
   workflow_dispatch:
 
 jobs:
