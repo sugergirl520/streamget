@@ -1,4 +1,4 @@
-name: Build StreamGetGUL
+name: Build StreamGetGUI
 
 permissions:
   contents: write
